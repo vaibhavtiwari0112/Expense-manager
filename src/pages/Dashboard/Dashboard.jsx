@@ -180,7 +180,7 @@ const Dashboard = () => {
               </ResponsiveContainer>
             </div>
 
-            {!isEmpty(filteredData) && (
+            {/* {!isEmpty(filteredData) && (
               <div className="bg-white bg-opacity-20 backdrop-blur-lg rounded-lg p-4 shadow-lg hover:shadow-2xl transition duration-300 mb-4">
                 <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
@@ -209,7 +209,7 @@ const Dashboard = () => {
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-            )}
+            )} */}
           </>
         )}
 
