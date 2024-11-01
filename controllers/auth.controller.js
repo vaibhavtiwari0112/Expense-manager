@@ -9,6 +9,7 @@ const AuthController = {
         data: user,
       });
     } catch (error) {
+      console.log("register",error);
       res.status(400).json({
         message: error.message,
       });
@@ -23,6 +24,7 @@ const AuthController = {
         data: { user, token },
       });
     } catch (error) {
+      console.log("login",error);
       res.status(401).json({
         message: error.message,
       });

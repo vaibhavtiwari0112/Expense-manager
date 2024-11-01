@@ -5,7 +5,19 @@ const {JWT_SECRET_KEY } = process.env
 
 const AuthService = {
   async register({ name, email, password }) {
+    // Check if user already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
+      throw new Error("Email is already registered");
+    }
+
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create a new user
     const user = await prisma.user.create({
       data: {
         name,
@@ -17,10 +29,10 @@ const AuthService = {
     // Generate JWT token
     const token = jwt.sign(
       { id: user.id, email: user.email, name: user.name },
-      JWT_SECRET_KEY,
+      JWT_SECRET_KEY
     );
 
-    return { user, token }; 
+    return { user, token };
   },
 
   async login({ email, password }) {

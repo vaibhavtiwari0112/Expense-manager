@@ -1,6 +1,6 @@
 const SavingsService = require("../services/savings.service");
 const InvestmentsService = require("../services/investments.service");
-const ExpensesService = require("../services/expenses.service");
+const ExpensesService = require("../services/transactions.service");
 
 const DashboardController = {
   async getDashboardData(req, res) {
