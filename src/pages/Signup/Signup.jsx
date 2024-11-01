@@ -37,7 +37,7 @@ const Signup = () => {
   const handleSubmit = (values, { resetForm }) => {
     dispatch(register(values));
     resetForm();
-    navigate("/dashboard");
+    navigate("/");
   };
 
   return (

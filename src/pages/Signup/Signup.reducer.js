@@ -24,7 +24,7 @@ const signupSlice = createSlice({
       })
       .addCase(register.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.user = action.payload; 
+        state.user = action.payload.data.user; // Assuming the payload contains user data
       })
       .addCase(register.rejected, (state, action) => {
         state.status = 'failed';

@@ -5,6 +5,8 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
+import AddExpense from "./pages/AddExpenses/AddExpense";
+import PrivateRoute from "./component/PrivateRoutes";
 
 const AppRoutes = () => {
   return (
@@ -12,7 +14,15 @@ const AppRoutes = () => {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
-      <Route path="/dashboard" element={<Dashboard />} />
+
+      <Route
+        path="/dashboard"
+        element={<PrivateRoute element={<Dashboard />} />}
+      />
+      <Route
+        path="/add-expense"
+        element={<PrivateRoute element={<AddExpense />} />}
+      />
     </Routes>
   );
 };

@@ -1,8 +1,4 @@
-export const selectDashboardData = (state) => ({
-    totalExpenses: state.dashboard.totalExpenses,
-    totalSavings: state.dashboard.totalSavings,
-    totalInvestments: state.dashboard.totalInvestments,
-    status: state.dashboard.status,
-    error: state.dashboard.error,
-  });
-  
+
+export const selectTransactions = (state) => state.dashboard.transactions;
+export const selectDashboardStatus = (state) => state.dashboard.status;
+export const selectDashboardError = (state) => state.dashboard.error;

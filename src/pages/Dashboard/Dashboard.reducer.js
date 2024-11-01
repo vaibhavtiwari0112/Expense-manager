@@ -1,33 +1,27 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { fetchDashboardData } from './Dashboard.actions';
+// dashboardSlice.js
+import { createSlice } from "@reduxjs/toolkit";
+import { fetchTransactions } from "./Dashboard.actions";
 
 const dashboardSlice = createSlice({
-  name: 'dashboard',
+  name: "dashboard",
   initialState: {
-    totalExpenses: 0,
-    totalSavings: 0,
-    totalInvestments: 0,
-    status: 'idle', // idle | loading | succeeded | failed
+    transactions: [],
+    status: "idle",
     error: null,
   },
-  reducers: {
-    // Local reducers (if needed)
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchDashboardData.pending, (state) => {
-        state.status = 'loading';
+      .addCase(fetchTransactions.pending, (state) => {
+        state.status = "loading";
       })
-      .addCase(fetchDashboardData.fulfilled, (state, action) => {
-        state.status = 'succeeded';
-        // Assuming the API response has expense, savings, and investment data
-        state.totalExpenses = action.payload.expenses;
-        state.totalSavings = action.payload.savings;
-        state.totalInvestments = action.payload.investments;
+      .addCase(fetchTransactions.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.transactions = action.payload.data; // Ensure transactions are updated here
       })
-      .addCase(fetchDashboardData.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload || action.error.message;
+      .addCase(fetchTransactions.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload.messsage;
       });
   },
 });

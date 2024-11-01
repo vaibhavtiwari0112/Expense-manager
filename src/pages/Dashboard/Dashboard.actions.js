@@ -1,14 +1,27 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
-import axiosInstance from '../../utils/AxiosInstance';
 
-// Fetch data for the dashboard (expenses, savings, investments)
-export const fetchDashboardData = createAsyncThunk(
-  'dashboard/fetchDashboardData',
-  async (_, { rejectWithValue }) => {
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import axiosInstance from "../../utils/AxiosInstance";
+
+export const fetchTransactions = createAsyncThunk(
+  "dashboard/fetchTransactions",
+  async ({ page = 0, itemsPerPage = 5, interval = "monthly" }, { getState, rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get('/dashboard/data'); // Replace with actual API endpoint
+      const state = getState();
+      const token = state.login.token || localStorage.getItem('authToken');
+
+      const response = await axiosInstance.get("transactions", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: {
+          page, 
+          itemsPerPage, 
+          interval, 
+        },
+      });
       return response.data;
     } catch (error) {
+      console.error("Error fetching transactions:", error); // Log any error
       return rejectWithValue(error.response?.data || error.message);
     }
   }

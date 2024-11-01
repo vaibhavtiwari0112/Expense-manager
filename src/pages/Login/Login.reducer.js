@@ -3,8 +3,8 @@ import { login } from "./Login.actions.js";
 
 const initialState = {
   user: null,
-  token: null,
-  status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
+  token: localStorage.getItem("authToken") || null,
+  status: 'idle',
   error: null,
 };
 
@@ -13,9 +13,16 @@ const loginSlice = createSlice({
   initialState,
   reducers: {
     logout: (state) => {
+      localStorage.removeItem("authToken");
       state.user = null;
       state.token = null;
       state.status = 'idle';
+    },
+    loadTokenFromStorage: (state) => {
+      const token = localStorage.getItem("authToken");
+      if (token) {
+        state.token = token;
+      }
     },
   },
   extraReducers: (builder) => {
@@ -25,8 +32,8 @@ const loginSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.user = action.payload.user;
-        state.token = action.payload.token; // Assuming token comes with user data
+        state.user = action.payload.user; // Ensure this points to the correct user structure
+        state.token = action.payload.token;
       })
       .addCase(login.rejected, (state, action) => {
         state.status = 'failed';
@@ -35,5 +42,5 @@ const loginSlice = createSlice({
   },
 });
 
-export const { logout } = loginSlice.actions;
+export const { logout ,loadTokenFromStorage} = loginSlice.actions;
 export default loginSlice.reducer;

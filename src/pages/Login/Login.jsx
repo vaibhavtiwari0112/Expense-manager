@@ -3,9 +3,11 @@ import { useDispatch } from "react-redux";
 import { login } from "./Login.actions";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const initialValues = {
     email: "",
@@ -21,9 +23,10 @@ const Login = () => {
       .required("Password is required"),
   });
 
-  const handleSubmit = (values, { resetForm }) => {
+  const handleSubmit = async (values, { resetForm }) => {
     dispatch(login(values));
-    resetForm(); 
+    resetForm();
+    navigate("/");
   };
 
   return (
