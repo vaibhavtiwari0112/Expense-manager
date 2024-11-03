@@ -6,14 +6,26 @@ import getAuthToken from "../../utils/GetAuthtoken";
 export const addExpense = createAsyncThunk(
   "expense/addExpense",
   async (expenseData, { getState, rejectWithValue }) => {
+    const state = getState(); 
+    const loginData = selectLoginState(state); // Use the selector with the state
 
-    const loginData = selectLoginState(getState());
+    if (!loginData) {
+      console.error("Login data is missing");
+      return rejectWithValue("Login data is missing");
+    }
+
     const token = getAuthToken();
-    const userId = loginData?.user?.id;
+    
+    if (!token) {
+      console.error("Token is missing");
+      return rejectWithValue("Token is missing");
+    }
+    
+    const userId = loginData.user?.id || localStorage.getItem("userId"); // Access userId properly
 
-    if (!token || !userId) {
-      console.error("Token or User ID is missing");
-      return rejectWithValue("Token or User ID is missing");
+    if (!userId) {
+      console.error("User ID is missing");
+      return rejectWithValue("User ID is missing");
     }
 
     try {

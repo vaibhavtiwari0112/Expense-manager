@@ -31,7 +31,7 @@ const AddExpense = () => {
     };
 
     dispatch(addExpense(dataToSend));
-    resetForm(); // Reset the form after submission
+    // resetForm();
   };
 
   return (

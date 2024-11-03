@@ -6,9 +6,12 @@ import { fetchTransactions } from "../../pages/Dashboard/Dashboard.actions";
 import { selectLoginState } from "../../pages/Login/Login.selectors.js"; // Import the selector
 
 const Navbar = () => {
-  const { token } = useSelector(selectLoginState); // Use Redux token state
+  const { token } = useSelector(selectLoginState);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  if (!token) {
+    dispatch(loadTokenFromStorage());
+  }
 
   useEffect(() => {
     dispatch(loadTokenFromStorage()); // Load token from localStorage on component mount
@@ -27,8 +30,6 @@ const Navbar = () => {
       .then(() => navigate("/dashboard"))
       .catch((error) => console.error("Error fetching transactions:", error));
   };
-
-  console.log("Token:", token); // Log the token for debugging
 
   return (
     <nav className="bg-gradient-to-r from-purple-500 to-indigo-500 p-4 shadow-lg">

@@ -47,7 +47,7 @@ const Dashboard = () => {
     if (status === "idle") {
       dispatch(fetchTransactions({ interval }));
       const datesWithTransactions = new Set(
-        fetchedTransactions.map((transaction) =>
+        transactions.map((transaction) =>
           new Date(transaction.createdAt).toDateString()
         )
       );
