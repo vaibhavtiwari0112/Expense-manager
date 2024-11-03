@@ -34,7 +34,8 @@ const loginSlice = createSlice({
         state.status = 'succeeded';
         state.user = action.payload.user; // Ensure this points to the correct user structure
         state.token = action.payload.token;
-      })
+        localStorage.setItem("authToken", action.payload.token); // Sync token with localStorage
+      })      
       .addCase(login.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload || action.error.message;

@@ -25,8 +25,8 @@ const Login = () => {
 
   const handleSubmit = async (values, { resetForm }) => {
     dispatch(login(values));
-    resetForm();
     navigate("/");
+    resetForm();
   };
 
   return (

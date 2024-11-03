@@ -1,17 +1,21 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../../pages/Login/Login.reducer"; // Adjust the path if necessary
+import { logout, loadTokenFromStorage } from "../../pages/Login/Login.reducer";
 import { fetchTransactions } from "../../pages/Dashboard/Dashboard.actions";
+import { selectLoginState } from "../../pages/Login/Login.selectors.js"; // Import the selector
 
 const Navbar = () => {
-  const token = localStorage.getItem("authToken"); // Get user from either login or signup state
+  const { token } = useSelector(selectLoginState); // Use Redux token state
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    dispatch(loadTokenFromStorage()); // Load token from localStorage on component mount
+  }, [dispatch]);
+
   const handleLogout = () => {
-    dispatch(logout());
+    dispatch(logout()); // Clear token from Redux state and localStorage
     navigate("/login");
   };
 
@@ -23,6 +27,8 @@ const Navbar = () => {
       .then(() => navigate("/dashboard"))
       .catch((error) => console.error("Error fetching transactions:", error));
   };
+
+  console.log("Token:", token); // Log the token for debugging
 
   return (
     <nav className="bg-gradient-to-r from-purple-500 to-indigo-500 p-4 shadow-lg">

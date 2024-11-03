@@ -6,7 +6,7 @@ import { fetchTransactions } from "../Dashboard/Dashboard.actions";
 
 const Home = () => {
   const welcomeMessage = useSelector(selectWelcomeMessage);
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleViewExpenses = () => {
@@ -36,13 +36,13 @@ const Home = () => {
       </p>
       <div className="flex space-x-4">
         <button
-          onClick={handleViewExpenses} // Call the function directly
+          onClick={handleViewExpenses}
           className="bg-white text-purple-700 hover:bg-gray-200 rounded-lg px-4 py-2 shadow-lg"
         >
           View Expenses
         </button>
         <button
-          onClick={handleAddExpense} // Call the function directly
+          onClick={handleAddExpense}
           className="bg-white text-purple-700 hover:bg-gray-200 rounded-lg px-4 py-2 shadow-lg"
         >
           Add Expense

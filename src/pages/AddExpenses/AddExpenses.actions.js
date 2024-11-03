@@ -1,18 +1,15 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "../../utils/AxiosInstance";
 import { selectLoginState } from "../Login/Login.selectors";
+import getAuthToken from "../../utils/GetAuthtoken";
 
 export const addExpense = createAsyncThunk(
   "expense/addExpense",
   async (expenseData, { getState, rejectWithValue }) => {
-    console.log("Checking state at start:", getState());
 
     const loginData = selectLoginState(getState());
-    const token = localStorage.getItem("authToken") || loginData?.token;
+    const token = getAuthToken();
     const userId = loginData?.user?.id;
-
-    console.log("Token:", token);
-    console.log("User ID:", userId);
 
     if (!token || !userId) {
       console.error("Token or User ID is missing");
@@ -20,8 +17,6 @@ export const addExpense = createAsyncThunk(
     }
 
     try {
-      console.log("inside try >>>>>>>>>>>>>");
-
       const response = await axiosInstance.post(
         "/transactions",
         {

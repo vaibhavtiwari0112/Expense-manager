@@ -1,4 +1,3 @@
-// src/components/Dashboard.js
 import React, { useEffect, useState } from "react";
 import {
   LineChart,
@@ -22,12 +21,13 @@ import {
   selectDashboardStatus,
   selectDashboardError,
 } from "./Dashboard.selectors";
-import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import TransactionTable from "./TransactionTable";
-import { isEmpty } from "lodash";
-
+import LoadingComponent from "../../component/Loading";
+import ErrorComponent from "../../component/Error";
+import Tippy from "@tippyjs/react";
 const Dashboard = () => {
   const dispatch = useDispatch();
   const transactions = useSelector(selectTransactions);
@@ -38,6 +38,7 @@ const Dashboard = () => {
   const [filteredData, setFilteredData] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [activeTab, setActiveTab] = useState("expenses");
+  const [highlightedDates, setHighlightedDates] = useState(new Set());
 
   const currentYear = new Date().getFullYear();
   const colors = ["#ff6b6b", "#4db8ff", "#66ff66", "#ffc300", "#e040fb"];
@@ -45,6 +46,12 @@ const Dashboard = () => {
   useEffect(() => {
     if (status === "idle") {
       dispatch(fetchTransactions({ interval }));
+      const datesWithTransactions = new Set(
+        fetchedTransactions.map((transaction) =>
+          new Date(transaction.createdAt).toDateString()
+        )
+      );
+      setHighlightedDates(datesWithTransactions);
     }
   }, [dispatch, status, interval]);
 
@@ -56,7 +63,7 @@ const Dashboard = () => {
           name:
             interval === "monthly"
               ? new Date(0, i).toLocaleString("default", { month: "short" })
-              : `${currentYear - 10 + i}`,
+              : `${currentYear - 9 + i}`, // Adjust the start year to include the current year
           expenses: 0,
           savings: 0,
           investments: 0,
@@ -68,7 +75,7 @@ const Dashboard = () => {
         const index =
           interval === "monthly"
             ? transactionDate.getMonth()
-            : transactionDate.getFullYear() - (currentYear - 10);
+            : transactionDate.getFullYear() - (currentYear - 9); // Update here to match the new start year
 
         if (index >= 0 && index < data.length) {
           const transactionType =
@@ -81,7 +88,6 @@ const Dashboard = () => {
         }
       });
 
-      // Set "Others" label only for Pie chart data
       if (interval === "monthly") {
         const pieData = data.map((d) => ({
           ...d,
@@ -103,8 +109,49 @@ const Dashboard = () => {
     return value;
   };
 
-  if (status === "loading") return <div>Loading...</div>;
-  if (status === "failed") return <div>Error: {error}</div>;
+  const handleDayRender = (date) => {
+    const dayTransactions = transactions.filter(
+      (transaction) =>
+        new Date(transaction.createdAt).toDateString() === date.toDateString()
+    );
+
+    if (dayTransactions.length === 0) {
+      return null;
+    }
+    const total = dayTransactions.reduce(
+      (acc, transaction) => {
+        acc[transaction.type] += transaction.amount;
+        return acc;
+      },
+      { expense: 0, saving: 0, investment: 0 }
+    );
+
+    return (
+      <Tippy
+        content={
+          <div className="bg-white bg-opacity-20 backdrop-blur-lg rounded-lg p-2 text-white shadow-lg text-sm">
+            <div className="text-red-500">
+              {`Expenses: ${formatCurrency(total.expense)}`}
+            </div>
+            <div className="text-green-500">
+              {`Savings: ${formatCurrency(total.saving)}`}
+            </div>
+            <div className="text-yellow-500">
+              {`Investments: ${formatCurrency(total.investment)}`}
+            </div>
+          </div>
+        }
+        placement="top"
+      >
+        <div className="p-1 rounded-full bg-indigo-500 text-white">
+          {date.getDate()}
+        </div>
+      </Tippy>
+    );
+  };
+
+  if (status === "loading") return <LoadingComponent />;
+  if (status === "failed") return <ErrorComponent />;
 
   return (
     <div className="flex min-h-screen bg-gradient-to-r from-purple-600 to-indigo-600 p-4">
@@ -179,90 +226,24 @@ const Dashboard = () => {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-
-            {/* {!isEmpty(filteredData) && (
-              <div className="bg-white bg-opacity-20 backdrop-blur-lg rounded-lg p-4 shadow-lg hover:shadow-2xl transition duration-300 mb-4">
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={filteredData}
-                      dataKey={activeTab}
-                      nameKey="name"
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={100}
-                      fill={colors[2]}
-                      label={(entry) =>
-                        entry.name !== "Others"
-                          ? `${entry.name}: ${formatCurrency(entry[activeTab])}`
-                          : ""
-                      }
-                    >
-                      {filteredData.map((_, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={colors[index % colors.length]}
-                        />
-                      ))}
-                    </Pie>
-                    <Tooltip formatter={(value) => formatCurrency(value)} />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-            )} */}
           </>
         )}
 
         {activeTab !== "transactions" && (
           <div className="bg-white bg-opacity-20 backdrop-blur-lg rounded-lg p-4 shadow-lg mb-4">
-            <Calendar
-              onChange={setSelectedDate}
-              value={selectedDate}
-              tileContent={({ date }) => {
-                const dayTransactions = transactions.filter(
+            <DatePicker
+              selected={selectedDate}
+              onChange={(date) => setSelectedDate(date)}
+              inline
+              dayClassName={(date) =>
+                transactions.some(
                   (t) =>
                     new Date(t.createdAt).toDateString() === date.toDateString()
-                );
-
-                const total = dayTransactions.reduce(
-                  (acc, transaction) => {
-                    acc[transaction.type] += transaction.amount;
-                    return acc;
-                  },
-                  { expenses: 0, savings: 0, investments: 0 }
-                );
-
-                return (
-                  <div>
-                    {dayTransactions.length > 0 && (
-                      <div data-tip data-for={`tooltip-${date.toDateString()}`}>
-                        <span className="text-red-500">{`Expenses: ${formatCurrency(
-                          total.expenses
-                        )}`}</span>
-                        <span className="text-green-500">{`Savings: ${formatCurrency(
-                          total.savings
-                        )}`}</span>
-                        <span className="text-yellow-500">{`Investments: ${formatCurrency(
-                          total.investments
-                        )}`}</span>
-                      </div>
-                    )}
-                    <ReactTooltip
-                      id={`tooltip-${date.toDateString()}`}
-                      place="top"
-                      effect="solid"
-                    >
-                      {dayTransactions.map((transaction) => (
-                        <div key={transaction.id} className="text-xs">
-                          {transaction.type.charAt(0).toUpperCase() +
-                            transaction.type.slice(1)}
-                          : {formatCurrency(transaction.amount)}
-                        </div>
-                      ))}
-                    </ReactTooltip>
-                  </div>
-                );
-              }}
+                )
+                  ? "highlight-day"
+                  : undefined
+              }
+              renderDayContents={(day, date) => handleDayRender(date) || day}
             />
           </div>
         )}

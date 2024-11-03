@@ -1,14 +1,14 @@
 
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "../../utils/AxiosInstance";
+import getAuthToken from "../../utils/GetAuthtoken";
 
 export const fetchTransactions = createAsyncThunk(
   "dashboard/fetchTransactions",
   async ({ page = 0, itemsPerPage = 5, interval = "monthly" }, { getState, rejectWithValue }) => {
     try {
       const state = getState();
-      const token = state.login.token || localStorage.getItem('authToken');
-
+      const token = getAuthToken();
       const response = await axiosInstance.get("transactions", {
         headers: {
           Authorization: `Bearer ${token}`,

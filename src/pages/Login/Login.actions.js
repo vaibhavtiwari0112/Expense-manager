@@ -7,7 +7,6 @@ export const login = createAsyncThunk('login', async (credentials, { rejectWithV
     const token = response.data.data.token;
     localStorage.setItem("authToken", token);
     return response.data.data;
-     // Ensure this returns the user data correctly
   } catch (error) {
     return rejectWithValue(error.response?.data || error.message);
   }
