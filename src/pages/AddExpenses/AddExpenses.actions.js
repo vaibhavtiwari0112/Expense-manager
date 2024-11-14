@@ -7,7 +7,7 @@ export const addExpense = createAsyncThunk(
   "expense/addExpense",
   async (expenseData, { getState, rejectWithValue }) => {
     const state = getState(); 
-    const loginData = selectLoginState(state); // Use the selector with the state
+    const loginData = selectLoginState(state);
 
     if (!loginData) {
       console.error("Login data is missing");
@@ -21,7 +21,7 @@ export const addExpense = createAsyncThunk(
       return rejectWithValue("Token is missing");
     }
     
-    const userId = loginData.user?.id || localStorage.getItem("userId"); // Access userId properly
+    const userId = loginData.user?.id || localStorage.getItem("userId"); 
 
     if (!userId) {
       console.error("User ID is missing");

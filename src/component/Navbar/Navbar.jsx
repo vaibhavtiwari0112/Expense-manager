@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout, loadTokenFromStorage } from "../../pages/Login/Login.reducer";
 import { fetchTransactions } from "../../pages/Dashboard/Dashboard.actions";
-import { selectLoginState } from "../../pages/Login/Login.selectors.js"; // Import the selector
+import { selectLoginState } from "../../pages/Login/Login.selectors.js";
 
 const Navbar = () => {
   const { token } = useSelector(selectLoginState);
@@ -14,11 +14,11 @@ const Navbar = () => {
   }
 
   useEffect(() => {
-    dispatch(loadTokenFromStorage()); // Load token from localStorage on component mount
+    dispatch(loadTokenFromStorage());
   }, [dispatch]);
 
   const handleLogout = () => {
-    dispatch(logout()); // Clear token from Redux state and localStorage
+    dispatch(logout());
     navigate("/login");
   };
 

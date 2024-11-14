@@ -3,7 +3,7 @@ import { addExpense } from "./AddExpenses.actions";
 
 const initialState = {
   expenses: [],
-  status: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
+  status: "idle", 
   error: null,
 };
 
@@ -24,7 +24,7 @@ const addExpenseSlice = createSlice({
       })
       .addCase(addExpense.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.expenses.push(action.payload); // Add the new expense to the list
+        state.expenses.push(action.payload); 
       })
       .addCase(addExpense.rejected, (state, action) => {
         state.status = "failed";

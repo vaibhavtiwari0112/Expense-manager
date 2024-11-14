@@ -9,7 +9,7 @@ const AddExpense = () => {
   const initialValues = {
     type: "",
     amount: "",
-    currency: { value: "INR", label: "INR" }, // Set INR as the default currency
+    currency: { value: "INR", label: "INR" }, 
     description: "",
   };
 

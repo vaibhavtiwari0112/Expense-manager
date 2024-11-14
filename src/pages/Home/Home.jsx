@@ -1,7 +1,7 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectWelcomeMessage } from "./Home.selectors";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom"; 
 import { fetchTransactions } from "../Dashboard/Dashboard.actions";
 
 const Home = () => {

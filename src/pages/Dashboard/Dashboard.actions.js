@@ -21,7 +21,7 @@ export const fetchTransactions = createAsyncThunk(
       });
       return response.data;
     } catch (error) {
-      console.error("Error fetching transactions:", error); // Log any error
+      console.error("Error fetching transactions:", error); 
       return rejectWithValue(error.response?.data || error.message);
     }
   }

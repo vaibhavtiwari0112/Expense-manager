@@ -63,7 +63,7 @@ const Dashboard = () => {
           name:
             interval === "monthly"
               ? new Date(0, i).toLocaleString("default", { month: "short" })
-              : `${currentYear - 9 + i}`, // Adjust the start year to include the current year
+              : `${currentYear - 9 + i}`,
           expenses: 0,
           savings: 0,
           investments: 0,
@@ -75,7 +75,7 @@ const Dashboard = () => {
         const index =
           interval === "monthly"
             ? transactionDate.getMonth()
-            : transactionDate.getFullYear() - (currentYear - 9); // Update here to match the new start year
+            : transactionDate.getFullYear() - (currentYear - 9);
 
         if (index >= 0 && index < data.length) {
           const transactionType =
@@ -194,7 +194,6 @@ const Dashboard = () => {
 
         {activeTab !== "transactions" && (
           <>
-            {/* Line Chart */}
             <div className="bg-white bg-opacity-20 backdrop-blur-lg rounded-lg p-4 shadow-lg hover:shadow-2xl transition duration-300 mb-4">
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={filteredData}>
@@ -213,7 +212,6 @@ const Dashboard = () => {
               </ResponsiveContainer>
             </div>
 
-            {/* Bar Chart */}
             <div className="bg-white bg-opacity-20 backdrop-blur-lg rounded-lg p-4 shadow-lg hover:shadow-2xl transition duration-300 mb-4">
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={filteredData}>
