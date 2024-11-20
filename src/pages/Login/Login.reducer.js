@@ -4,6 +4,7 @@ import { login } from "./Login.actions.js";
 const initialState = {
   user: null,
   token: localStorage.getItem("authToken") || null,
+  isVerified: localStorage.getItem("isVerified") || false,
   status: 'idle',
   error: null,
 };
@@ -14,14 +15,18 @@ const loginSlice = createSlice({
   reducers: {
     logout: (state) => {
       localStorage.removeItem("authToken");
+      localStorage.removeItem("userId");
+      localStorage.removeItem("isVerified");
       state.user = null;
       state.token = null;
       state.status = 'idle';
     },
     loadTokenFromStorage: (state) => {
-      const token = localStorage.getItem("authToken");
+      const isVerified = localStorage.getItem("isVerified");
+      const token = isVerified && localStorage.getItem("authToken");
       if (token) {
         state.token = token;
+        state.isVerified = isVerified;
       }
     },
   },
@@ -34,6 +39,7 @@ const loginSlice = createSlice({
         state.status = 'succeeded';
         state.user = action.payload.user; 
         state.token = action.payload.token;
+        localStorage.setItem("isVerified", action.payload.isVerified);  
         localStorage.setItem("userId", action.payload.user.id);
         localStorage.setItem("authToken", action.payload.token); 
       })      

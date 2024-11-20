@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { login } from "./Login.actions";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
+import axiosInstance from "../../utils/AxiosInstance";
+import toast, { Toaster } from "react-hot-toast";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -24,13 +26,48 @@ const Login = () => {
   });
 
   const handleSubmit = async (values, { resetForm }) => {
-    dispatch(login(values));
-    navigate("/");
-    resetForm();
+    try {
+      dispatch(login(values));
+      toast.success(
+        "Login successful! Check your email for the verification OTP."
+      );
+      navigate("/verify-email", { state: { email: values.email } });
+      resetForm();
+    } catch (error) {
+      console.error("Login failed:", error);
+      toast.error("Login failed. Please try again.");
+    }
   };
+
+  const handleGoogleLogin = async (response) => {
+    const { credential } = response;
+    try {
+      const { data } = await axiosInstance.post("/auth/google", {
+        token: credential,
+      });
+      dispatch(login({ user: data.user, token: data.token }));
+      toast.success("Google login successful!");
+      navigate("/");
+    } catch (error) {
+      console.error("Google login failed:", error);
+      toast.error("Google login failed. Please try again.");
+    }
+  };
+
+  useEffect(() => {
+    google.accounts.id.initialize({
+      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+      callback: handleGoogleLogin,
+    });
+    google.accounts.id.renderButton(
+      document.getElementById("google-login-btn"),
+      { theme: "outline", size: "large" }
+    );
+  }, []);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-purple-500 to-indigo-500">
+      <Toaster position="top-center" reverseOrder={false} />
       <div className="bg-white rounded-lg shadow-lg p-8 max-w-sm w-full">
         <h2 className="text-2xl font-bold text-center text-purple-700 mb-6">
           Log In
@@ -85,6 +122,7 @@ const Login = () => {
             </button>
           </Form>
         </Formik>
+        <div id="google-login-btn" className="mt-4"></div>
       </div>
     </div>
   );

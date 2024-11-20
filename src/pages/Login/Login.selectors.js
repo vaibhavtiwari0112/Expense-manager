@@ -3,4 +3,5 @@ export const selectLoginState = (state) => ({
     user: state.login.user,
     error: state.login.error,
     token: state.login.token,
+    isVerified: state.login.isVerified
   });

@@ -6,6 +6,7 @@ import "./index.css";
 import { Provider, useDispatch } from "react-redux";
 import store from "./redux/Store";
 import { loadTokenFromStorage } from "./pages/Login/Login.reducer";
+import { Toaster } from "react-hot-toast";
 
 const AppContent = () => {
   const dispatch = useDispatch();
@@ -16,6 +17,7 @@ const AppContent = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <Toaster position="top-center" />
       <Navbar />
       <main className="flex-grow">
         <AppRoutes />

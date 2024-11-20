@@ -7,6 +7,7 @@ import { selectLoginState } from "../../pages/Login/Login.selectors.js";
 
 const Navbar = () => {
   const { token } = useSelector(selectLoginState);
+  const isVerified = localStorage.getItem("isVerified");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   if (!token) {
@@ -36,7 +37,7 @@ const Navbar = () => {
       <div className="container mx-auto flex justify-between items-center">
         <div className="text-white text-2xl font-bold">Expense Tracker</div>
         <div className="flex space-x-6">
-          {!token ? (
+          {!token || isVerified !== "true" ? (
             <>
               <Link
                 to="/login"
