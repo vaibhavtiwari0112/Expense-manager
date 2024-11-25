@@ -27,12 +27,14 @@ const Login = () => {
 
   const handleSubmit = async (values, { resetForm }) => {
     try {
-      dispatch(login(values));
-      toast.success(
-        "Login successful! Check your email for the verification OTP."
-      );
-      navigate("/verify-email", { state: { email: values.email } });
-      resetForm();
+      dispatch(login(values)).then((res) => {
+        if(res.payload.token){
+        toast.success(
+          "Login successful! Check your email for the verification OTP."
+        );
+        navigate("/verify-email", { state: { email: values.email } });
+        resetForm();}
+      });
     } catch (error) {
       console.error("Login failed:", error);
       toast.error("Login failed. Please try again.");

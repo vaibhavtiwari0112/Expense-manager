@@ -35,9 +35,15 @@ const Signup = () => {
   });
 
   const handleSubmit = (values, { resetForm }) => {
-    dispatch(register(values));
-    resetForm();
-    navigate("/");
+    dispatch(register(values)).then((res) => {
+      if (res.payload.token) {
+        toast.success(
+          "SignUp successful! Check your email for the verification OTP."
+        );
+        navigate("/verify-email", { state: { email: values.email } });
+        resetForm();
+      }
+    });
   };
 
   return (

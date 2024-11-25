@@ -46,8 +46,6 @@ const VerifyEmail = () => {
         localStorage.setItem("isVerified", true);
         navigate("/");
       }
-    } catch {
-      // Errors are already handled in actions
     } finally {
       resetForm();
     }
@@ -57,8 +55,6 @@ const VerifyEmail = () => {
     try {
       setIsResending(true);
       await resendOTP(email);
-    } catch {
-      // Errors are already handled in actions
     } finally {
       setIsResending(false);
     }
