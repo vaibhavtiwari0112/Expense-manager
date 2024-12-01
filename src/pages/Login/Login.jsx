@@ -28,7 +28,7 @@ const Login = () => {
     try {
       const response = await dispatch(login(values));
       console.log(response);
-      if (response?.token) {
+      if (response?.payload.token) {
         navigate("/verify-email", { state: { email: values.email } });
         resetForm();
       } else {

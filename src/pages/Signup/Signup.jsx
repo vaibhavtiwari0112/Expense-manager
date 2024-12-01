@@ -5,6 +5,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { REGEX_PATTERNS } from "../../constants";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const { NAME, EMAIL, PASSWORD } = REGEX_PATTERNS;
 const Signup = () => {
@@ -36,12 +37,16 @@ const Signup = () => {
 
   const handleSubmit = (values, { resetForm }) => {
     dispatch(register(values)).then((res) => {
-      if (res.token) {
+      console.log(res);
+      if (res?.payload?.data?.token) {
         toast.success(
           "SignUp successful! Check your email for the verification OTP."
         );
         navigate("/verify-email", { state: { email: values.email } });
         resetForm();
+      } else {
+        console.error("Error registering:", res);
+        toast.error(res.message);
       }
     });
   };
