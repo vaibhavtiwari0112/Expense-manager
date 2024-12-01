@@ -23,7 +23,6 @@ import {
 } from "./Dashboard.selectors";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { Tooltip as ReactTooltip } from "react-tooltip";
 import TransactionTable from "./TransactionTable";
 import LoadingComponent from "../../component/Loading";
 import ErrorComponent from "../../component/Error";
@@ -158,7 +157,13 @@ const Dashboard = () => {
       <aside className="w-64 bg-white bg-opacity-20 backdrop-blur-lg rounded-lg p-4 text-white">
         <h2 className="text-2xl font-bold text-center">Dashboard</h2>
         <ul className="flex flex-col space-y-4 mt-4">
-          {["expenses", "savings", "investments", "transactions"].map((tab) => (
+          {[
+            "expenses",
+            "savings",
+            "investments",
+            "overall",
+            "transactions",
+          ].map((tab) => (
             <li
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -192,7 +197,7 @@ const Dashboard = () => {
           </select>
         </div>
 
-        {activeTab !== "transactions" && (
+        {activeTab !== "transactions" && activeTab !== "overall" && (
           <>
             <div className="bg-white bg-opacity-20 backdrop-blur-lg rounded-lg p-4 shadow-lg hover:shadow-2xl transition duration-300 mb-4">
               <ResponsiveContainer width="100%" height={300}>
@@ -227,7 +232,7 @@ const Dashboard = () => {
           </>
         )}
 
-        {activeTab !== "transactions" && (
+        {activeTab !== "transactions" && activeTab !== "overall" && (
           <div className="bg-white bg-opacity-20 backdrop-blur-lg rounded-lg p-4 shadow-lg mb-4">
             <DatePicker
               selected={selectedDate}
@@ -243,6 +248,40 @@ const Dashboard = () => {
               }
               renderDayContents={(day, date) => handleDayRender(date) || day}
             />
+          </div>
+        )}
+        {activeTab === "overall" && (
+          <div className="bg-white bg-opacity-20 backdrop-blur-lg rounded-lg p-4 shadow-lg hover:shadow-2xl transition duration-300 mb-4">
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={filteredData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#fff" />
+                <XAxis dataKey="name" stroke="#fff" />
+                <YAxis stroke="#fff" tickFormatter={formatCurrency} />
+                <Tooltip formatter={(value) => formatCurrency(value)} />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey="savings"
+                  stroke={colors[2]}
+                  strokeWidth={2}
+                  name="Savings"
+                />
+                <Line
+                  type="monotone"
+                  dataKey="expenses"
+                  stroke={colors[0]}
+                  strokeWidth={2}
+                  name="Expenses"
+                />
+                <Line
+                  type="monotone"
+                  dataKey="investments"
+                  stroke={colors[1]}
+                  strokeWidth={2}
+                  name="Investments"
+                />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
         )}
 

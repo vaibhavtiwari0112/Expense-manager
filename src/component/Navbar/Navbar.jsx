@@ -6,7 +6,7 @@ import { fetchTransactions } from "../../pages/Dashboard/Dashboard.actions";
 import { selectLoginState } from "../../pages/Login/Login.selectors.js";
 
 const Navbar = () => {
-  const { token } = useSelector(selectLoginState);
+  const token = localStorage.getItem("authToken");
   const isVerified = localStorage.getItem("isVerified");
   const dispatch = useDispatch();
   const navigate = useNavigate();

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchTransactions } from "./Dashboard.actions";
@@ -7,30 +6,29 @@ import {
   selectDashboardStatus,
   selectDashboardError,
 } from "./Dashboard.selectors";
-import ReactPaginate from "react-paginate";
-import { isEmpty } from "lodash";
+import { AgGridReact } from "ag-grid-react";
 import LoadingComponent from "../../component/Loading";
 import ErrorComponent from "../../component/Error";
+
+import "ag-grid-community/styles/ag-grid.css";
+import "ag-grid-community/styles/ag-theme-alpine.css";
 
 const TransactionTable = ({ interval }) => {
   const dispatch = useDispatch();
   const transactions = useSelector(selectTransactions);
   const status = useSelector(selectDashboardStatus);
-  const error = useSelector(selectDashboardError);
 
-  const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 5;
+  const [gridApi, setGridApi] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1); // Track the current page
   const [totalSavings, setTotalSavings] = useState(0);
   const [totalInvestments, setTotalInvestments] = useState(0);
   const [totalExpenses, setTotalExpenses] = useState(0);
 
   useEffect(() => {
     if (interval) {
-      dispatch(
-        fetchTransactions({ page: currentPage + 1, itemsPerPage, interval })
-      );
+      dispatch(fetchTransactions({ interval, page: currentPage }));
     }
-  }, [dispatch, currentPage, interval]);
+  }, [dispatch, interval, currentPage]);
 
   useEffect(() => {
     if (Array.isArray(transactions)) {
@@ -54,15 +52,53 @@ const TransactionTable = ({ interval }) => {
     }
   }, [transactions]);
 
-  const handlePageChange = (selectedPage) => {
-    setCurrentPage(selectedPage.selected);
+  const onGridReady = (params) => {
+    setGridApi(params.api);
   };
 
-  const pageCount = Math.ceil(transactions.length / itemsPerPage);
-  const displayedTransactions = transactions.slice(
-    currentPage * itemsPerPage,
-    (currentPage + 1) * itemsPerPage
-  );
+  const onPaginationChanged = () => {
+    if (gridApi) {
+      const currentPage = gridApi.paginationGetCurrentPage() + 1;
+      setCurrentPage(currentPage);
+    }
+  };
+
+  const columnDefs = [
+    {
+      headerName: "Date",
+      field: "createdAt",
+      sortable: true,
+      filter: true,
+      cellRenderer: (data) => new Date(data.value).toLocaleDateString(),
+      width: 150,
+    },
+    {
+      headerName: "Description",
+      field: "description",
+      sortable: true,
+      filter: true,
+      width: 250,
+    },
+    {
+      headerName: "Amount (₹)",
+      field: "amount",
+      sortable: true,
+      filter: true,
+      width: 150,
+    },
+    {
+      headerName: "Type",
+      field: "type",
+      sortable: true,
+      filter: true,
+      width: 150,
+      cellClass: (params) => {
+        if (params.value === "saving") return "bg-green-100";
+        if (params.value === "investment") return "bg-blue-100";
+        return "bg-red-100";
+      },
+    },
+  ];
 
   const calculateOverallProfitLossPercentage = () => {
     const profitLoss = totalSavings + totalInvestments - totalExpenses;
@@ -87,84 +123,53 @@ const TransactionTable = ({ interval }) => {
   if (status === "failed") return <ErrorComponent />;
 
   const { percentage, isProfit } = calculateOverallProfitLossPercentage();
+  const filteredTransactions = transactions.map(
+    ({ extraField, ...rest }) => rest
+  );
 
   return (
-    <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-lg shadow-lg p-6 transition duration-300 hover:shadow-2xl">
-      <div className="flex justify-between mb-6">
-        <div>
-          <p className="text-green-300 font-semibold">
-            Total Savings: ₹{totalSavings} (
-            {calculateTabPortionPercentage(totalSavings)}% of total)
-          </p>
-          <p className="text-blue-300 font-semibold">
-            Total Investments: ₹{totalInvestments} (
-            {calculateTabPortionPercentage(totalInvestments)}% of total)
-          </p>
-          <p className="text-red-300 font-semibold">
-            Total Expenses: ₹{totalExpenses} (
-            {calculateTabPortionPercentage(totalExpenses)}% of total)
-          </p>
-          <p
-            className={`font-semibold mt-4 ${
-              isProfit ? "text-green-300" : "text-red-300"
-            }`}
-          >
-            Overall Profit/Loss: {percentage}
-          </p>
-        </div>
+    <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-lg shadow-lg p-6 text-white">
+      <div className="mb-6">
+        <p className="font-semibold text-green-200">
+          Total Savings: ₹{totalSavings} (
+          {calculateTabPortionPercentage(totalSavings)}% of total)
+        </p>
+        <p className="font-semibold text-blue-200">
+          Total Investments: ₹{totalInvestments} (
+          {calculateTabPortionPercentage(totalInvestments)}% of total)
+        </p>
+        <p className="font-semibold text-red-200">
+          Total Expenses: ₹{totalExpenses} (
+          {calculateTabPortionPercentage(totalExpenses)}% of total)
+        </p>
+        <p
+          className={`font-semibold mt-4 ${
+            isProfit ? "text-green-200" : "text-red-200"
+          }`}
+        >
+          Overall Profit/Loss: {percentage}
+        </p>
       </div>
 
-      {!isEmpty(transactions) && (
-        <div>
-          <table className="w-full text-center border-collapse mb-4">
-            <thead className="bg-indigo-300 rounded-lg">
-              <tr>
-                <th className="p-4 text-white">Date</th>
-                <th className="p-4 text-white">Description</th>
-                <th className="p-4 text-white">Amount</th>
-                <th className="p-4 text-white">Type</th>
-              </tr>
-            </thead>
-            <tbody>
-              {displayedTransactions.map((transaction) => (
-                <tr
-                  key={transaction.id}
-                  className={`transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 ${
-                    transaction.type === "expense"
-                      ? "bg-red-100"
-                      : transaction.type === "saving"
-                      ? "bg-green-100"
-                      : "bg-blue-100"
-                  }`}
-                >
-                  <td className="p-4">
-                    {new Date(transaction.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className="p-4">{transaction.description}</td>
-                  <td className="p-4">₹{transaction.amount}</td>
-                  <td className="p-4 capitalize">{transaction.type}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <ReactPaginate
-            previousLabel={"<"}
-            nextLabel={">"}
-            breakLabel={"..."}
-            pageCount={pageCount}
-            marginPagesDisplayed={2}
-            pageRangeDisplayed={5}
-            onPageChange={handlePageChange}
-            containerClassName={"flex justify-center my-6"}
-            pageClassName={"mx-1"}
-            previousClassName={"mx-1"}
-            nextClassName={"mx-1"}
-            activeClassName={"bg-indigo-600 text-white rounded-full"}
-            breakClassName={"mx-1"}
-            className={"flex space-x-2"}
-          />
-        </div>
-      )}
+      <div
+        className="ag-theme-alpine"
+        style={{
+          height: "400px",
+          width: "100%",
+          background: "rgba(255, 255, 255, 0.1)",
+        }}
+      >
+        <AgGridReact
+          rowData={filteredTransactions}
+          columnDefs={columnDefs}
+          pagination={true}
+          paginationPageSize={20}
+          onGridReady={onGridReady}
+          onPaginationChanged={onPaginationChanged} // Add pagination change handler
+          domLayout="autoHeight"
+          suppressColumnVirtualisation={true}
+        />
+      </div>
     </div>
   );
 };

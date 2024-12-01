@@ -1,10 +1,9 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useDispatch } from "react-redux";
 import { login } from "./Login.actions";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../../utils/AxiosInstance";
 import toast, { Toaster } from "react-hot-toast";
 
 const Login = () => {
@@ -27,50 +26,29 @@ const Login = () => {
 
   const handleSubmit = async (values, { resetForm }) => {
     try {
-      dispatch(login(values)).then((res) => {
-        if(res.payload.token){
-        toast.success(
-          "Login successful! Check your email for the verification OTP."
-        );
+      const response = await dispatch(login(values));
+      if (response.token) {
         navigate("/verify-email", { state: { email: values.email } });
-        resetForm();}
-      });
+        resetForm();
+      } else {
+        throw new Error("Invalid credentials");
+      }
     } catch (error) {
       console.error("Login failed:", error);
-      toast.error("Login failed. Please try again.");
+      toast.error(
+        error.response?.data?.error || "Login failed. Please try again."
+      );
     }
   };
 
-  const handleGoogleLogin = async (response) => {
-    const { credential } = response;
-    try {
-      const { data } = await axiosInstance.post("/auth/google", {
-        token: credential,
-      });
-      dispatch(login({ user: data.user, token: data.token }));
-      toast.success("Google login successful!");
-      navigate("/");
-    } catch (error) {
-      console.error("Google login failed:", error);
-      toast.error("Google login failed. Please try again.");
-    }
+  const handleGoogleLogin = async () => {
+    window.location.href = "http://localhost:5000/auth/google";
   };
-
-  useEffect(() => {
-    google.accounts.id.initialize({
-      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-      callback: handleGoogleLogin,
-    });
-    google.accounts.id.renderButton(
-      document.getElementById("google-login-btn"),
-      { theme: "outline", size: "large" }
-    );
-  }, []);
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-purple-500 to-indigo-500">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-purple-500 to-indigo-500 px-4">
       <Toaster position="top-center" reverseOrder={false} />
-      <div className="bg-white rounded-lg shadow-lg p-8 max-w-sm w-full">
+      <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-sm">
         <h2 className="text-2xl font-bold text-center text-purple-700 mb-6">
           Log In
         </h2>
@@ -79,52 +57,56 @@ const Login = () => {
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
-          <Form>
-            <div className="mb-4">
-              <label className="block text-gray-700 mb-2" htmlFor="email">
-                Email
-              </label>
-              <Field
-                type="email"
-                id="email"
-                name="email"
-                className="border border-gray-300 rounded-lg p-2 w-full"
-                placeholder="you@example.com"
-              />
-              <ErrorMessage
-                name="email"
-                component="div"
-                className="text-red-500 text-sm mt-1"
-              />
-            </div>
+          {({ isSubmitting }) => (
+            <Form>
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2" htmlFor="email">
+                  Email
+                </label>
+                <Field
+                  type="email"
+                  id="email"
+                  name="email"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-purple-300"
+                  placeholder="you@example.com"
+                />
+                <ErrorMessage
+                  name="email"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
+              </div>
 
-            <div className="mb-4">
-              <label className="block text-gray-700 mb-2" htmlFor="password">
-                Password
-              </label>
-              <Field
-                type="password"
-                id="password"
-                name="password"
-                className="border border-gray-300 rounded-lg p-2 w-full"
-                placeholder="********"
-              />
-              <ErrorMessage
-                name="password"
-                component="div"
-                className="text-red-500 text-sm mt-1"
-              />
-            </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2" htmlFor="password">
+                  Password
+                </label>
+                <Field
+                  type="password"
+                  id="password"
+                  name="password"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-purple-300"
+                  placeholder="********"
+                />
+                <ErrorMessage
+                  name="password"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
+              </div>
 
-            <button
-              type="submit"
-              className="bg-purple-700 text-white hover:bg-purple-800 rounded-lg px-4 py-2 w-full"
-            >
-              Log In
-            </button>
-          </Form>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className={`bg-purple-700 text-white hover:bg-purple-800 rounded-lg px-4 py-2 w-full ${
+                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+              >
+                {isSubmitting ? "Logging in..." : "Log In"}
+              </button>
+            </Form>
+          )}
         </Formik>
-        <div id="google-login-btn" className="mt-4"></div>
       </div>
     </div>
   );

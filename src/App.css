@@ -22,3 +22,10 @@ html {
   background-color: #e5e7eb; /* Color of the scrollbar track */
   border-radius: 10px; /* Rounded corners for the track */
 }
+
+.ag-header {
+  @apply bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold;
+}
+.ag-row {
+  @apply transition duration-300 ease-in-out hover:scale-105;
+}

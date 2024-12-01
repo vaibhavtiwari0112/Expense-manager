@@ -5,9 +5,9 @@ export const login = createAsyncThunk('login', async (credentials, { rejectWithV
   try {
     const response = await axiosInstance.post('auth/login', credentials);
     const token = response.data?.data?.token;
-    const user = response.data?.data?.user;  // Assuming the response has user data here
+    const user = response.data?.data?.user; 
     localStorage.setItem("authToken", token);
-    return { user, token };  // Return user and token together
+    return { user, token };
   } catch (error) {
     return rejectWithValue(error.response?.data || error.message);
   }

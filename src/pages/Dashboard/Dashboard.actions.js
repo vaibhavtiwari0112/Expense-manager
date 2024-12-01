@@ -5,7 +5,7 @@ import getAuthToken from "../../utils/GetAuthtoken";
 
 export const fetchTransactions = createAsyncThunk(
   "dashboard/fetchTransactions",
-  async ({ page = 0, itemsPerPage = 5, interval = "monthly" }, { getState, rejectWithValue }) => {
+  async ({ page = 0, itemsPerPage = 20, interval = "monthly" }, { getState, rejectWithValue }) => {
     try {
       const state = getState();
       const token = getAuthToken();

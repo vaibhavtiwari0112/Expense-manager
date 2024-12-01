@@ -7,7 +7,6 @@ import Dashboard from "./pages/Dashboard";
 import AddExpense from "./pages/AddExpenses/AddExpense";
 import PrivateRoute from "./component/PrivateRoutes";
 import VerifyEmail from "./pages/VerifyEmail";
-
 const AppRoutes = () => {
   return (
     <Routes>

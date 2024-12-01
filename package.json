@@ -14,6 +14,7 @@
     "@prisma/client": "^5.20.0",
     "@reduxjs/toolkit": "^2.2.7",
     "@tippyjs/react": "^4.2.6",
+    "ag-grid-react": "^32.3.3",
     "axios": "^1.7.7",
     "formik": "^2.4.6",
     "lodash": "^4.17.21",
