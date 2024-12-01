@@ -3,13 +3,14 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { addExpense } from "./AddExpenses.actions";
 import { useDispatch } from "react-redux";
+import toast from "react-hot-toast";
 
 const AddExpense = () => {
   const dispatch = useDispatch();
   const initialValues = {
     type: "",
     amount: "",
-    currency: { value: "INR", label: "INR" }, 
+    currency: { value: "INR", label: "INR" },
     description: "",
   };
 
@@ -30,7 +31,9 @@ const AddExpense = () => {
       description: values.description,
     };
 
-    dispatch(addExpense(dataToSend));
+    dispatch(addExpense(dataToSend)).then((res) => {
+      toast.success("Added expense Successfully!");
+    });
     resetForm();
   };
 
