@@ -37,7 +37,6 @@ const Signup = () => {
 
   const handleSubmit = (values, { resetForm }) => {
     dispatch(register(values)).then((res) => {
-      console.log(res);
       if (res?.payload?.data?.token) {
         toast.success(
           "SignUp successful! Check your email for the verification OTP."

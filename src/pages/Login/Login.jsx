@@ -27,7 +27,6 @@ const Login = () => {
   const handleSubmit = async (values, { resetForm }) => {
     try {
       const response = await dispatch(login(values));
-      console.log(response);
       if (response?.payload.token) {
         navigate("/verify-email", { state: { email: values.email } });
         resetForm();

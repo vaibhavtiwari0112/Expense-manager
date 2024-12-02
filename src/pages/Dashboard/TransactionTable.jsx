@@ -9,6 +9,8 @@ import {
 import { AgGridReact } from "ag-grid-react";
 import LoadingComponent from "../../component/Loading";
 import ErrorComponent from "../../component/Error";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
@@ -119,6 +121,65 @@ const TransactionTable = ({ interval }) => {
     return total === 0 ? 0 : ((tabAmount / total) * 100).toFixed(2);
   };
 
+  const downloadPDF = () => {
+    const doc = new jsPDF();
+
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    doc.setFillColor(75, 0, 130);
+    doc.rect(0, 0, pageWidth, pageHeight, "F");
+    doc.setFontSize(18);
+    doc.setTextColor(255, 255, 255);
+    doc.text("Expense Tracker - Transaction Report", pageWidth / 2, 20, {
+      align: "center",
+    });
+
+    doc.setFontSize(12);
+    doc.text(`Report Date: ${new Date().toLocaleDateString()}`, 14, 35);
+
+    const { percentage, isProfit } = calculateOverallProfitLossPercentage();
+    const profitLossText = isProfit
+      ? `Overall Profit: ${percentage}`
+      : `Overall Loss: ${percentage}`;
+
+    doc.setFontSize(14);
+    doc.setTextColor(
+      isProfit ? 34 : 220,
+      isProfit ? 139 : 20,
+      isProfit ? 34 : 60
+    );
+    doc.text(profitLossText, 14, 45);
+
+    const tableColumn = ["Date", "Description", "Amount (Rs.)", "Type"];
+    const tableRows = transactions.map((transaction) => [
+      new Date(transaction.createdAt).toLocaleDateString(),
+      transaction.description,
+      `Rs.${transaction.amount}`,
+      transaction.type,
+    ]);
+
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: 60,
+      theme: "grid",
+      styles: {
+        fontSize: 10,
+        cellPadding: 5,
+      },
+      headStyles: {
+        fillColor: [75, 0, 130],
+        textColor: [255, 255, 255],
+      },
+      bodyStyles: {
+        fillColor: [255, 255, 255],
+      },
+    });
+
+    doc.save("Expense_Tracker_Report.pdf");
+  };
+
   if (status === "loading") return <LoadingComponent />;
   if (status === "failed") return <ErrorComponent />;
 
@@ -151,6 +212,13 @@ const TransactionTable = ({ interval }) => {
         </p>
       </div>
 
+      <button
+        onClick={downloadPDF}
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
+      >
+        Download PDF
+      </button>
+
       <div
         className="ag-theme-alpine"
         style={{
@@ -165,7 +233,7 @@ const TransactionTable = ({ interval }) => {
           pagination={true}
           paginationPageSize={20}
           onGridReady={onGridReady}
-          onPaginationChanged={onPaginationChanged} // Add pagination change handler
+          onPaginationChanged={onPaginationChanged}
           domLayout="autoHeight"
           suppressColumnVirtualisation={true}
         />
