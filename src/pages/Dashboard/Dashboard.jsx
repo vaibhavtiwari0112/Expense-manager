@@ -25,6 +25,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import TransactionTable from "./TransactionTable";
 import LoadingComponent from "../../component/Loading";
+import NavigateButton from "../../component/NavigateButton";
 import ErrorComponent from "../../component/Error";
 import Tippy from "@tippyjs/react";
 const Dashboard = () => {
@@ -150,7 +151,7 @@ const Dashboard = () => {
   };
 
   if (status === "loading") return <LoadingComponent />;
-  if (status === "failed") return <ErrorComponent />;
+  if (status === "failed") return <NavigateButton path="login" />;
 
   return (
     <div className="flex min-h-screen bg-gradient-to-r from-purple-600 to-indigo-600 p-4">

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { login } from "./Login.actions";
 import { Formik, Form, Field, ErrorMessage } from "formik";
@@ -44,6 +44,10 @@ const Login = () => {
   const handleGoogleLogin = async () => {
     window.location.href = "http://localhost:5000/auth/google";
   };
+
+  useEffect(() => {
+    localStorage.setItem("authToken", null);
+  }, []);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-purple-500 to-indigo-500 px-4">

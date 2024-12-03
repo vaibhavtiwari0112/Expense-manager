@@ -16,7 +16,7 @@ export const verifyOTP = async (email, otp) => {
   try {
     const response = await axiosInstance.post("/auth/verify-email", { email, otp });
     if (response.data.success) {
-      localStorage.setItem("isVerified", true); // Store verified state
+      localStorage.setItem("isVerified", true); 
     }
     return response.data;
   } catch (error) {

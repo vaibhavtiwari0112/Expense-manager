@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchTransactions } from "./Dashboard.actions";
+import { fetchTransactions, sendEmail } from "./Dashboard.actions";
 import {
   selectTransactions,
   selectDashboardStatus,
@@ -14,6 +14,7 @@ import "jspdf-autotable";
 
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
+import toast from "react-hot-toast";
 
 const TransactionTable = ({ interval }) => {
   const dispatch = useDispatch();
@@ -187,7 +188,12 @@ const TransactionTable = ({ interval }) => {
   const filteredTransactions = transactions.map(
     ({ extraField, ...rest }) => rest
   );
-
+  const handleSendEmail = async () => {
+    dispatch(sendEmail()).then((res) => {
+      console.log(res);
+      if (res.status === 200) toast.success("Email sent successfully");
+    });
+  };
   return (
     <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-lg shadow-lg p-6 text-white">
       <div className="mb-6">
@@ -211,14 +217,21 @@ const TransactionTable = ({ interval }) => {
           Overall Profit/Loss: {percentage}
         </p>
       </div>
+      <div className="flex-col space-x-2 gap-2">
+        <button
+          onClick={downloadPDF}
+          className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-700 hover:to-blue-700 text-white font-bold py-2 px-5 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 ease-in-out mb-3"
+        >
+          Download PDF
+        </button>
 
-      <button
-        onClick={downloadPDF}
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
-      >
-        Download PDF
-      </button>
-
+        <button
+          onClick={handleSendEmail}
+          className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-700 hover:to-teal-700 text-white font-bold py-2 px-5 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 ease-in-out"
+        >
+          Send to mail
+        </button>
+      </div>
       <div
         className="ag-theme-alpine"
         style={{
