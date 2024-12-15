@@ -4,7 +4,6 @@ import { fetchTransactions, sendEmail } from "./Dashboard.actions";
 import {
   selectTransactions,
   selectDashboardStatus,
-  selectDashboardError,
 } from "./Dashboard.selectors";
 import { AgGridReact } from "ag-grid-react";
 import LoadingComponent from "../../component/Loading";
@@ -22,7 +21,7 @@ const TransactionTable = ({ interval }) => {
   const status = useSelector(selectDashboardStatus);
 
   const [gridApi, setGridApi] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1); // Track the current page
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalSavings, setTotalSavings] = useState(0);
   const [totalInvestments, setTotalInvestments] = useState(0);
   const [totalExpenses, setTotalExpenses] = useState(0);

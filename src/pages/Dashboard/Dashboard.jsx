@@ -151,8 +151,19 @@ const Dashboard = () => {
   };
 
   if (status === "loading") return <LoadingComponent />;
-  if (status === "failed") return <NavigateButton path="login" />;
+  if (status === "loading" || status === "pending") {
+    return <LoadingComponent />;
+  }
 
+  if (status === "failed") {
+    return (
+      <NavigateButton
+        path="login"
+        message="Authentication failed. Please log in again."
+        isOpen={true}
+      />
+    );
+  }
   return (
     <div className="flex min-h-screen bg-gradient-to-r from-purple-600 to-indigo-600 p-4">
       <aside className="w-64 bg-white bg-opacity-20 backdrop-blur-lg rounded-lg p-4 text-white">
