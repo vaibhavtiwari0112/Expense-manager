@@ -30,7 +30,8 @@ const Navbar = () => {
     const page = 0;
     const itemsPerPage = 5;
     const interval = "monthly";
-    dispatch(fetchTransactions({ page, itemsPerPage, interval }))
+    const type = "expenses";
+    dispatch(fetchTransactions({ page, itemsPerPage, interval, expenses }))
       .then(() => navigate("/dashboard"))
       .catch((error) => console.error("Error fetching transactions:", error));
   };
