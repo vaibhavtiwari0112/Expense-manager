@@ -38,6 +38,7 @@ const Signup = () => {
   const handleSubmit = (values, { resetForm }) => {
     dispatch(register(values)).then((res) => {
       if (res?.payload?.data?.token) {
+        localStorage.setItem("user", JSON.stringify(res.payload.data.user));
         toast.success(
           "SignUp successful! Check your email for the verification OTP."
         );

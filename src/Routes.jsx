@@ -7,6 +7,8 @@ import Dashboard from "./pages/Dashboard";
 import AddExpense from "./pages/AddExpenses/AddExpense";
 import PrivateRoute from "./component/PrivateRoutes";
 import VerifyEmail from "./pages/VerifyEmail";
+import User from "./pages/user";
+
 const AppRoutes = () => {
   return (
     <Routes>
@@ -22,6 +24,7 @@ const AppRoutes = () => {
         path="/add-expense"
         element={<PrivateRoute element={<AddExpense />} />}
       />
+      <Route path="/user" element={<User />} />
     </Routes>
   );
 };

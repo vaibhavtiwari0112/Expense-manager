@@ -5,11 +5,10 @@ import getAuthToken from "../../utils/GetAuthtoken";
 export const fetchTransactions = createAsyncThunk(
   "dashboard/fetchTransactions",
   async (
-    { page = 0, itemsPerPage = 20, interval = "monthly" },
-    { getState, rejectWithValue }
+    { page = 0, itemsPerPage = 20, interval = "monthly", type },
+    { rejectWithValue }
   ) => {
     try {
-      const state = getState();
       const token = getAuthToken();
       const response = await axiosInstance.get("transactions", {
         headers: {
@@ -19,6 +18,7 @@ export const fetchTransactions = createAsyncThunk(
           page,
           itemsPerPage,
           interval,
+          type,
         },
       });
       return response.data;

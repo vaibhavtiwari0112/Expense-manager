@@ -17,7 +17,7 @@ const NavigateButton = ({ path, message, isOpen, onClose }) => {
       isOpen={isOpen}
       onRequestClose={handleClose}
       className="bg-gradient-to-br from-white to-purple-100 border border-purple-300 border-none shadow-xl p-8 rounded-2xl max-w-lg mx-auto mt-20 flex flex-col items-center"
-      overlayClassName="fixed inset-0 bg-purple-600/60 flex justify-center items-center"
+      overlayClassName="fixed inset-0 bg-purple-200/95 flex justify-center items-center"
     >
       <h2 className="text-2xl font-bold text-purple-700 mb-6 text-center">
         {message}

@@ -28,11 +28,11 @@ import LoadingComponent from "../../component/Loading";
 import NavigateButton from "../../component/NavigateButton";
 import ErrorComponent from "../../component/Error";
 import Tippy from "@tippyjs/react";
+
 const Dashboard = () => {
   const dispatch = useDispatch();
   const transactions = useSelector(selectTransactions);
   const status = useSelector(selectDashboardStatus);
-  const error = useSelector(selectDashboardError);
 
   const [interval, setInterval] = useState("monthly");
   const [filteredData, setFilteredData] = useState([]);
@@ -44,16 +44,18 @@ const Dashboard = () => {
   const colors = ["#ff6b6b", "#4db8ff", "#66ff66", "#ffc300", "#e040fb"];
 
   useEffect(() => {
-    if (status === "idle") {
-      dispatch(fetchTransactions({ interval }));
-      const datesWithTransactions = new Set(
-        transactions.map((transaction) =>
-          new Date(transaction.createdAt).toDateString()
-        )
-      );
-      setHighlightedDates(datesWithTransactions);
-    }
-  }, [dispatch, status, interval]);
+    console.log("activeTab : ", activeTab);
+    console.log("status", status);
+    // if (status === "idle") {
+    dispatch(fetchTransactions({ interval, type: activeTab }));
+    const datesWithTransactions = new Set(
+      transactions.map((transaction) =>
+        new Date(transaction.createdAt).toDateString()
+      )
+    );
+    setHighlightedDates(datesWithTransactions);
+    // }
+  }, [interval, activeTab]);
 
   useEffect(() => {
     const prepareData = () => {
@@ -151,10 +153,6 @@ const Dashboard = () => {
   };
 
   if (status === "loading") return <LoadingComponent />;
-  if (status === "loading" || status === "pending") {
-    return <LoadingComponent />;
-  }
-
   if (status === "failed") {
     return (
       <NavigateButton
@@ -196,12 +194,7 @@ const Dashboard = () => {
           </h1>
           <select
             value={interval}
-            onChange={(e) => {
-              setInterval(e.target.value);
-              if (e.target.value === "yearly") {
-                dispatch(fetchTransactions({ interval: "yearly" }));
-              }
-            }}
+            onChange={(e) => setInterval(e.target.value)}
             className="p-2 rounded bg-indigo-600 text-white"
           >
             <option value="monthly">Monthly</option>
