@@ -8,6 +8,7 @@ import * as Yup from "yup";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import CurrencyInput from "react-currency-input-field";
+import NavigateButton from "../../component/NavigateButton";
 
 const validationSchema = Yup.object({
   name: Yup.string().required("Name is required"),
@@ -113,6 +114,16 @@ const User = () => {
       reader.readAsDataURL(file);
     }
   };
+
+  if (!user) {
+    return (
+      <NavigateButton
+        path="login"
+        message="Authentication failed. Please log in again."
+        isOpen={true}
+      />
+    );
+  }
 
   return (
     <div className="bg-gradient-to-r from-purple-600 to-blue-500 min-h-screen flex items-center justify-center px-4 py-10">
