@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserProfile, updateUserProfile } from "./user.actions";
-import { selectUser } from "./user.selectors";
+import {
+  selectUser,
+  selectUserError,
+  selectUserLoading,
+} from "./user.selectors";
 import { toast } from "react-hot-toast";
 import { Formik, Field, Form } from "formik";
 import * as Yup from "yup";
@@ -9,6 +13,7 @@ import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import CurrencyInput from "react-currency-input-field";
 import NavigateButton from "../../component/NavigateButton";
+import LoadingComponent from "../../component/Loading";
 
 const validationSchema = Yup.object({
   name: Yup.string().required("Name is required"),
@@ -22,6 +27,8 @@ const validationSchema = Yup.object({
 const User = () => {
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
+  const loading = useSelector(selectUserLoading);
+  const error = useSelector(selectUserError);
   const [initialValues, setInitialValues] = useState({
     name: "",
     email: "",
@@ -115,7 +122,11 @@ const User = () => {
     }
   };
 
-  if (!user) {
+  if (loading) {
+    return <LoadingComponent />;
+  }
+
+  if (error) {
     return (
       <NavigateButton
         path="login"
