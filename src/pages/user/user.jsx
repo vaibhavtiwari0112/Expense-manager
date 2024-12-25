@@ -66,7 +66,7 @@ const User = () => {
   }, [user]);
 
   const handleSubmit = (values) => {
-    const rawSalary = parseFloat(values.salary.replace(/[^0-9.]/g, ""));
+    const rawSalary = parseFloat(String(values.salary).replace(/[^0-9.]/g, ""));
 
     if (isNaN(rawSalary)) {
       toast.error("Salary must be a valid number.");
@@ -145,7 +145,6 @@ const User = () => {
 
   const formatSalary = (value) => {
     if (!value) return "";
-    // Remove any non-numeric characters
     const rawValue = value.replace(/[^0-9.]/g, "");
     const [integer, decimal] = rawValue.split(".");
     let formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
