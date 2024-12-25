@@ -11,17 +11,21 @@ import { Formik, Field, Form } from "formik";
 import * as Yup from "yup";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
-import CurrencyInput from "react-currency-input-field";
 import NavigateButton from "../../component/NavigateButton";
 import LoadingComponent from "../../component/Loading";
 
 const validationSchema = Yup.object({
   name: Yup.string().required("Name is required"),
   email: Yup.string().email("Invalid email").required("Email is required"),
-  phone: Yup.string().required("Phone is required"),
-  salary: Yup.number().required("Salary is required").positive().integer(),
+  phone: Yup.string()
+    .required("Phone is required")
+    .matches(/^\+?\d{7,15}$/, "Enter a valid phone number"),
+  salary: Yup.string().required("Salary is required"),
   salary_type: Yup.string().required("Salary type is required"),
-  salaryDate: Yup.number().required("Salary date is required").min(1).max(31),
+  salaryDate: Yup.number()
+    .required("Salary date is required")
+    .min(1, "Must be a valid day of the month")
+    .max(31, "Must be a valid day of the month"),
 });
 
 const User = () => {
@@ -61,11 +65,13 @@ const User = () => {
     }
   }, [user]);
 
-  const handleSalaryChange = (value) => {
-    setFieldValue("salary", value);
-  };
-
   const handleSubmit = (values) => {
+    const rawSalary = parseFloat(values.salary.replace(/[^0-9.]/g, ""));
+
+    if (isNaN(rawSalary)) {
+      toast.error("Salary must be a valid number.");
+      return;
+    }
     const formattedSalaryDate = new Date(
       Date.UTC(
         new Date().getFullYear(),
@@ -77,6 +83,7 @@ const User = () => {
     dispatch(
       updateUserProfile({
         ...values,
+        salary: rawSalary,
         salaryDate: formattedSalaryDate,
         profileImagePath: newProfileImage || user.profileImagePath,
       })
@@ -135,6 +142,15 @@ const User = () => {
       />
     );
   }
+
+  const formatSalary = (value) => {
+    if (!value) return "";
+    // Remove any non-numeric characters
+    const rawValue = value.replace(/[^0-9.]/g, "");
+    const [integer, decimal] = rawValue.split(".");
+    let formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return decimal ? `${formattedInteger}.${decimal}` : formattedInteger;
+  };
 
   return (
     <div className="bg-gradient-to-r from-purple-600 to-blue-500 min-h-screen flex items-center justify-center px-4 py-10">
@@ -252,50 +268,44 @@ const User = () => {
                   )}
                 </div>
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-white">
                   Salary
                 </label>
                 <Field name="salary">
-                  {({ field }) => (
-                    <CurrencyInput
-                      {...field}
-                      id="salary"
-                      name="salary"
-                      prefix="₹"
-                      thousandSeparator=","
-                      decimalSeparator="."
-                      decimalScale={2}
-                      allowNegative={false}
-                      value={field.value}
-                      onValueChange={(value) => setFieldValue("salary", value)}
-                      className="mt-1 block w-full rounded-lg p-3 text-gray-800 border border-gray-300 shadow-sm focus:border-purple-600 focus:ring-2 focus:ring-purple-500 transition"
-                      placeholder="₹0"
-                    />
-                  )}
+                  {({ field, form }) => {
+                    return (
+                      <div className="relative">
+                        <span className="absolute left-3 top-3 text-gray-500">
+                          ₹
+                        </span>
+                        <input
+                          id="salary"
+                          name="salary"
+                          type="text"
+                          inputMode="decimal"
+                          value={field.value}
+                          onChange={(e) => {
+                            const rawValue = e.target.value.replace(
+                              /[^0-9.]/g,
+                              ""
+                            );
+                            form.setFieldValue("salary", rawValue);
+                          }}
+                          onBlur={() => {
+                            const formattedValue = formatSalary(field.value);
+                            form.setFieldValue("salary", formattedValue);
+                          }}
+                          className="mt-1 block w-full pl-8 rounded-lg p-3 text-gray-800 border border-gray-300 shadow-sm focus:border-purple-600 focus:ring-2 focus:ring-purple-500 transition"
+                          placeholder="0"
+                        />
+                      </div>
+                    );
+                  }}
                 </Field>
+
                 {errors.salary && touched.salary && (
                   <div className="text-red-500 text-sm">{errors.salary}</div>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-white">
-                  Salary Type
-                </label>
-                <Field
-                  as="select"
-                  name="salary_type"
-                  className="mt-1 block w-full rounded-lg p-3 text-gray-800 border border-gray-300 shadow-sm focus:border-purple-600 focus:ring-2 focus:ring-purple-500 transition"
-                >
-                  <option value="monthly">Monthly</option>
-                  <option value="yearly">Yearly</option>
-                </Field>
-                {errors.salary_type && touched.salary_type && (
-                  <div className="text-red-500 text-sm">
-                    {errors.salary_type}
-                  </div>
                 )}
               </div>
 

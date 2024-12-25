@@ -15,7 +15,7 @@ export const fetchUserProfile = createAsyncThunk(
 
       const response = await axiosInstance.get(`user/${userId}`, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`, // Correctly send the token in headers
         },
       });
       return response.data;
@@ -34,14 +34,16 @@ export const updateUserProfile = createAsyncThunk(
       if (!userId) {
         throw new Error("User ID is missing from localStorage.");
       }
+
+      // Send headers separately and userData in the payload
       const response = await axiosInstance.put(
         `user/${userId}`,
+        userData, // User data goes here, not in headers
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`, // Send the token in the headers
           },
-        },
-        userData
+        }
       );
       return response.data;
     } catch (error) {
