@@ -12,6 +12,7 @@ const AddExpense = () => {
     amount: "",
     currency: { value: "INR", label: "INR" },
     description: "",
+    createdAt: "", // Added createdAt for the date
   };
 
   const validationSchema = Yup.object({
@@ -21,18 +22,23 @@ const AddExpense = () => {
       .positive("Must be a positive number"),
     currency: Yup.object().required("Select a currency"),
     description: Yup.string().required("Description is required"),
+    createdAt: Yup.date().required("Date is required"),
   });
 
   const handleSubmit = (values, { resetForm }) => {
+    // Convert the date to the required format
+    const formattedDate = new Date(values.createdAt).toISOString();
+
     const dataToSend = {
       type: values.type,
       amount: values.amount,
       currency: values.currency.value,
       description: values.description,
+      createdAt: formattedDate, // Include the formatted date
     };
 
     dispatch(addExpense(dataToSend)).then((res) => {
-      toast.success("Added expense Successfully!");
+      toast.success("Added expense successfully!");
     });
     resetForm();
   };
@@ -59,7 +65,6 @@ const AddExpense = () => {
                 >
                   <option value="" label="Select type" />
                   <option value="expense" label="Expense" />
-                  <option value="saving" label="Saving" />
                   <option value="investment" label="Investment" />
                 </Field>
                 <ErrorMessage
@@ -102,6 +107,21 @@ const AddExpense = () => {
                 />
                 <ErrorMessage
                   name="description"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
+              </div>
+
+              {/* New Date Field */}
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Date</label>
+                <Field
+                  type="date"
+                  name="createdAt"
+                  className="border border-gray-300 rounded-lg p-2 w-full bg-gray-50 focus:outline-none focus:ring focus:ring-purple-300"
+                />
+                <ErrorMessage
+                  name="createdAt"
                   component="div"
                   className="text-red-500 text-sm mt-1"
                 />
